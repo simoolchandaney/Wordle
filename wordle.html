@@ -23,7 +23,7 @@ function pickWord() {
 let canvas = document.getElementById("myCanvas");
 let ctx = canvas.getContext("2d");
 
-class Cells {
+class Cell {
 	
   constructor(x, y){
   	this.x = x;
@@ -47,40 +47,52 @@ class Cells {
   }
 }
 
+class Key {
+  constructor (x, y) {
+    this.x = x;
+    this.y = y;
+    this.keySide = 28;
+  }
+  draw(string, shift){
+    ctx.lineWidth = "2";
+  	ctx.strokeStyle = 'black';
+  	ctx.beginPath();
+    ctx.rect(this.x, this.y, (this.keySide)*(shift), this.keySide);
+    ctx.stroke();
+    ctx.font = "16px Arial";
+    ctx.fillText(string, (this.x)+((this.keySide)/5),(this.y)+((this.keySide)/2)); 
+  }
+}
+
 function drawKeyboard(){
   let letters = ['q', 'w', 'e', 'r', 't','y', 'u', 'i', 'o', 'p', 'a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l', 'z', 'x', 'c', 'v', 'b', 'n', 'm'];
   let x = 30;
   let y = 3 * canvas.width / 4;
+  let keys = [];
   let keySide = 28;
-  ctx.lineWidth = "2";
-  ctx.strokeStyle = 'black';
   for( let i = 0; i < letters.length; i ++ ){
+    let key = new Key(x,y);
     if( i == 10  ) {
         y += keySide + 7;
         x = 40 + keySide/2;
+        key = new Key(x,y);
     }
     else if( i == 19 ){
       x = 30;
     	y += keySide + 7;
-      ctx.beginPath();
-      ctx.rect(x,y,keySide*1.65,keySide);
-      ctx.stroke();
-      ctx.font = "16px Arial";
-      ctx.fillText("enter", x+keySide/5,y+keySide/2 ); 
+      key = new Key(x,y);
+      key.draw("enter", 1.65);
+      keys.push(key);
       x = 55 + keySide;
+      key = new Key(x,y);
     }
-    ctx.beginPath();
-    ctx.rect(x,y,keySide,keySide);
-    ctx.stroke();
-    ctx.font = "16px Arial";
-    ctx.fillText(letters[i], x+keySide/5,y+keySide/2 );
+    key.draw(letters[i], 1);
+    keys.push(key);
     x += keySide + 7;
   }
-  ctx.beginPath();
-  ctx.rect(x,y,keySide*1.85,keySide);
-  ctx.stroke();
-  ctx.font = "16px Arial";
-  ctx.fillText("delete", x+keySide/5,y+keySide/2 );
+  let key = new Key(x,y);
+  key.draw("delete", 1.85);
+  keys.push(key);
   x += keySide + 7;
  }
  
