@@ -23,11 +23,27 @@ function pickWord() {
 let canvas = document.getElementById("myCanvas");
 let ctx = canvas.getContext("2d");
 
-class Cell {
-	color = "FFFFF";
+class Cells {
+	
   constructor(x, y){
   	this.x = x;
-    thix.y = y;
+    this.y = y;
+    this.color = "FFFFF";
+    this.keySide = 40;
+    
+  }
+  
+  draw(){
+    ctx.lineWidth = "2";
+  	ctx.strokeStyle = 'black';
+  	ctx.fillStyle = this.color;
+  	ctx.beginPath();
+    ctx.rect( this.x, this.y, this.keySide, this.keySide);
+    ctx.stroke();
+  }
+
+  getKeySide(){
+    return this.keySide;
   }
 }
 
@@ -72,24 +88,36 @@ function drawKeyboard(){
 function drawBoard(){
 	let x = 30;
   let y = 10;
+  let cells = [];
   let keySide = 40;
-  ctx.lineWidth = "2";
-  ctx.strokeStyle = 'black';
   for( let i = 0; i < 6; i ++ ){
   	for( let j = 0; j < 5; j ++){
-      ctx.beginPath();
-      ctx.rect(x, y, keySide, keySide);
-      ctx.stroke();
+      let cell = new Cell(x,y);
+      keySide = cell.getKeySide();
+      cell.draw();
+      cells.push(cell);
       x += keySide + 10;
      }
      x = 30;
      y += keySide + 10;
   }
+  return cells;
 }
 drawKeyboard();
-drawBoard();
+let cells = drawBoard();
 let word = pickWord();
-console.log(word);
+console.log(cells);
+
+
+
+
+
+
+
+
+
+
+
 
 </script>
 </body>
