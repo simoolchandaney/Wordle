@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8" />
+	<title>Paradigms Assignment 2</title>
+	<style>
+   	 * { padding: 0; margin: 0; }
+   	 canvas { background: #eee; display: block; margin: 0 auto; }
+	</style>
+</head>
+<body>
+
+<canvas id="myCanvas" width="480" height="480"></canvas>
+
+
+<script>
+
+function pickWord() {
+  let words= ["aback", "abase", "abate", "abaya", "abbey", "abbot", "abets", "abhor", "abide", "abode", "abort", "about", "above", "abuse", "abuts", "abyss", "ached", "aches", "acids", "acing", "ackee", "acorn", "acres", "acrid", "acted", "actin", "actor", "acute", "adage", "adapt", "added", "adder", "addle", "adept", "adieu", "adios", "adits", "adman", "admin", "admit", "adobe", "adobo", "adopt", "adore", "adorn", "adult", "adzes", "aegis", "aeons", "aerie", "affix", "afire", "afoot", "afore", "after", "again", "agape", "agate", "agave", "agent", "aggro", "agile", "aging", "aglow", "agony", "agora", "agree", "ahead", "ahold", "aided", "aider", "aides", "ailed", "aimed", "aimer", "aioli", "aired", "aisle", "alarm", "album", "alder", "aleph", "alert", "algae", "algal", "alias", "alibi", "alien", "align", "alike", "alive", "alkyd", "alkyl", "allay", "alley", "allot", "allow", "alloy", "allyl", "aloes", "aloft", "aloha", "alone", "along", "aloof", "aloud", "alpha", "altar", "alter", "altos", "alums", "amass", "amaze", "amber", "ambit", "amble", "ambos", "amend", "amide", "amine", "amino", "amiss", "amity", "amnio", "among", "amour", "amped", "ample", "amply", "amuse", "ancho", "angel", "anger", "angle", "angry", "angst", "anima", "anime", "anion", "anise", "ankle", "annas", "annex", "annoy", "annul", "anode", "anole", "antic", "antis", "antsy", "anvil", "aorta", "apace", "apart", "aphid", "apnea", "apple", "apply", "apron", "apses", "apter", "aptly", "aquas", "arbor", "ardor", "areal", "areas", "areca", "arena", "argon", "argot", "argue", "argus", "arias", "arils", "arise", "armed", "armor", "aroma", "arose", "array", "arrow", "arses", "arson", "artsy", "asana", "ascot", "ashen", "ashes", "aside", "asked", "asker", "askew", "aspen", "aspic", "assay", "asses", "asset", "aster", "astir", "asura", "atlas", "atman", "atoll", "atoms", "atone", "atopy", "attic", "audio", "audit", "auger", "aught", "augur", "aunts", "aunty", "aural", "auras", "autos", "auxin", "avail", "avers", "avert", "avian", "avoid", "avows", "await", "awake", "award", "aware", "awash", "awful", "awoke", "axels", "axial", "axils", "axing", "axiom", "axion", "axles", "axons", "azide", "azole", "azure"];
+
+ 	return words[ Math.floor( Math.random() * words.length ) ]; 
+ }
+let canvas = document.getElementById("myCanvas");
+let ctx = canvas.getContext("2d");
+
+class Cell {
+	color = "FFFFF";
+  constructor(x, y){
+  	this.x = x;
+    thix.y = y;
+  }
+}
+
+function drawKeyboard(){
+  let letters = ['q', 'w', 'e', 'r', 't','y', 'u', 'i', 'o', 'p', 'a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l', 'z', 'x', 'c', 'v', 'b', 'n', 'm'];
+  let x = 30;
+  let y = 3 * canvas.width / 4;
+  let keySide = 28;
+  ctx.lineWidth = "2";
+  ctx.strokeStyle = 'black';
+  for( let i = 0; i < letters.length; i ++ ){
+    if( i == 10  ) {
+        y += keySide + 7;
+        x = 40 + keySide/2;
+    }
+    else if( i == 19 ){
+      x = 30;
+    	y += keySide + 7;
+      ctx.beginPath();
+      ctx.rect(x,y,keySide*1.65,keySide);
+      ctx.stroke();
+      ctx.font = "16px Arial";
+      ctx.fillText("enter", x+keySide/5,y+keySide/2 ); 
+      x = 55 + keySide;
+    }
+    ctx.beginPath();
+    ctx.rect(x,y,keySide,keySide);
+    ctx.stroke();
+    ctx.font = "16px Arial";
+    ctx.fillText(letters[i], x+keySide/5,y+keySide/2 );
+    x += keySide + 7;
+  }
+  ctx.beginPath();
+  ctx.rect(x,y,keySide*1.85,keySide);
+  ctx.stroke();
+  ctx.font = "16px Arial";
+  ctx.fillText("delete", x+keySide/5,y+keySide/2 );
+  x += keySide + 7;
+ }
+ 
+ 
+function drawBoard(){
+	let x = 30;
+  let y = 10;
+  let keySide = 40;
+  ctx.lineWidth = "2";
+  ctx.strokeStyle = 'black';
+  for( let i = 0; i < 6; i ++ ){
+  	for( let j = 0; j < 5; j ++){
+      ctx.beginPath();
+      ctx.rect(x, y, keySide, keySide);
+      ctx.stroke();
+      x += keySide + 10;
+     }
+     x = 30;
+     y += keySide + 10;
+  }
+}
+drawKeyboard();
+drawBoard();
+let word = pickWord();
+console.log(word);
+
+</script>
+</body>
+</html>
