@@ -32,9 +32,14 @@ function click(e){
   let rect = canvas.getBoundingClientRect();
   let x = e.clientX - rect.left;
   let y = e.clientY - rect.top;
-  console.log(x, y);
+
+  let letter = keyboard.checkClick(x,y);
+  if( letter != null ){
+    console.log(letter);
+    //add to board 
 
 
+  }
 }
 
 
@@ -45,7 +50,12 @@ class Cell {
     this.y = y;
     this.color = "FFFFF";
     this.keySide = 40;
+    this.string = "";
     
+  }
+
+  update(string) {
+    this.string = string;
   }
   
   draw(){
@@ -55,61 +65,108 @@ class Cell {
   	ctx.beginPath();
     ctx.rect( this.x, this.y, this.keySide, this.keySide);
     ctx.stroke();
+    ctx.font = "16px Arial";
+    ctx.fillText(this.string, (this.x)+((this.keySide)/5),(this.y)+((this.keySide)/2));
   }
 
-  isInCell(x, y){
-    if( x > this.x && x < this. )
-  }
 
   getKeySide(){
     return this.keySide;
   }
 }
 
+class Key {
+  constructor (x, y, string) {
+    this.x = x;
+    this.y = y;
+    this.keySide = 28;
+    this.string = string;
+  }
+  draw(shift){
+    ctx.lineWidth = "2";
+  	ctx.strokeStyle = 'black';
+  	ctx.beginPath();
+    ctx.rect(this.x, this.y, (this.keySide)*(shift), this.keySide);
+    ctx.stroke();
+    ctx.font = "16px Arial";
+    ctx.fillText(this.string, (this.x)+((this.keySide)/5),(this.y)+((this.keySide)/2)); 
+  }
+  isClicked(x,y){
+    return (x >= this.x && x <= this.x + this.keySide && y >= this.y && y <= this.y + this.keySide );
+  }
+}
+
+class Keyboard {
+   constructor(keys){
+     this.keys = keys;
+   }
+
+   checkClick(x,y ){
+     for( let i = 0; i < this.keys.length; i ++ ){
+        if( this.keys[i].isClicked(x,y) ){
+          return this.keys[i].string;
+        }
+     }
+     return null;
+   }
+
+}
+
+class Word{
+  constructor(cells){
+    this.cells = cells;
+  }
+
+  //update cell
+
+
+  // add letter
+
+
+  //delete letter
+}
+
 function drawKeyboard(){
   let letters = ['q', 'w', 'e', 'r', 't','y', 'u', 'i', 'o', 'p', 'a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l', 'z', 'x', 'c', 'v', 'b', 'n', 'm'];
   let x = 30;
   let y = 3 * canvas.width / 4;
+  let keys = [];
   let keySide = 28;
-  ctx.lineWidth = "2";
-  ctx.strokeStyle = 'black';
   for( let i = 0; i < letters.length; i ++ ){
+    let key = new Key(x,y, letters[i]);
     if( i == 10  ) {
         y += keySide + 7;
         x = 40 + keySide/2;
+        key = new Key(x,y, letters[i]);
     }
     else if( i == 19 ){
       x = 30;
     	y += keySide + 7;
-      ctx.beginPath();
-      ctx.rect(x,y,keySide*1.65,keySide);
-      ctx.stroke();
-      ctx.font = "16px Arial";
-      ctx.fillText("enter", x+keySide/5,y+keySide/2 ); 
+      key = new Key(x,y, "enter");
+      key.draw( 1.65);
+      keys.push(key);
       x = 55 + keySide;
+      key = new Key(x,y, letters[i]);
     }
-    ctx.beginPath();
-    ctx.rect(x,y,keySide,keySide);
-    ctx.stroke();
-    ctx.font = "16px Arial";
-    ctx.fillText(letters[i], x+keySide/5,y+keySide/2 );
+    key.draw( 1);
+    keys.push(key);
     x += keySide + 7;
   }
-  ctx.beginPath();
-  ctx.rect(x,y,keySide*1.85,keySide);
-  ctx.stroke();
-  ctx.font = "16px Arial";
-  ctx.fillText("delete", x+keySide/5,y+keySide/2 );
+  let key = new Key(x,y, "delete");
+  key.draw(1.85);
+  keys.push(key);
   x += keySide + 7;
+  return keys;
  }
  
  
 function drawBoard(){
 	let x = 30;
   let y = 10;
-  let cells = [];
+  let words = [];
   let keySide = 40;
   for( let i = 0; i < 6; i ++ ){
+    let cells = []
   	for( let j = 0; j < 5; j ++){
       let cell = new Cell(x,y);
       keySide = cell.getKeySide();
@@ -117,15 +174,24 @@ function drawBoard(){
       cells.push(cell);
       x += keySide + 10;
      }
+    let word = new Word(cells);
+     words.push(word);
      x = 30;
      y += keySide + 10;
   }
-  return cells;
+  return words;
 }
-drawKeyboard();
-let cells = drawBoard();
+
+
+
+
+let keys = drawKeyboard();
+let keyboard = new Keyboard(keys);
+let words = drawBoard();
 let word = pickWord();
-console.log(cells);
+
+
+console.log(words);
 
 
 
