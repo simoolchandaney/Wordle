@@ -10,7 +10,7 @@
 </head>
 <body>
 
-<canvas id="myCanvas" width="480" height="480"></canvas>
+<canvas id="myCanvas" width="480px" height="480px" ></canvas>
 
 
 <script>
@@ -23,7 +23,22 @@ function pickWord() {
 let canvas = document.getElementById("myCanvas");
 let ctx = canvas.getContext("2d");
 
-class Cells {
+
+canvas.addEventListener("mousedown", click, false );
+
+
+
+function click(e){
+  let rect = canvas.getBoundingClientRect();
+  let x = e.clientX - rect.left;
+  let y = e.clientY - rect.top;
+  console.log(x, y);
+
+
+}
+
+
+class Cell {
 	
   constructor(x, y){
   	this.x = x;
@@ -40,6 +55,10 @@ class Cells {
   	ctx.beginPath();
     ctx.rect( this.x, this.y, this.keySide, this.keySide);
     ctx.stroke();
+  }
+
+  isInCell(x, y){
+    if( x > this.x && x < this. )
   }
 
   getKeySide(){
