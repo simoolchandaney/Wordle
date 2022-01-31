@@ -18,13 +18,11 @@
 const GREY   = "#3A3A3C";
 const GREEN  = "#618B55";
 const YELLOW = "#B19F4C";
-
-
+let words = ["aback", "abase", "abate", "abaya", "abbey", "abbot", "abets", "abhor", "abide", "abode", "abort", "about", "above", "abuse", "abuts", "abyss", "ached", "aches", "acids", "acing", "ackee", "acorn", "acres", "acrid", "acted", "actin", "actor", "acute", "adage", "adapt", "added", "adder", "addle", "adept", "adieu", "adios", "adits", "adman", "admin", "admit", "adobe", "adobo", "adopt", "adore", "adorn", "adult", "adzes", "aegis", "aeons", "aerie", "affix", "afire", "afoot", "afore", "after", "again", "agape", "agate", "agave", "agent", "aggro", "agile", "aging", "aglow", "agony", "agora", "agree", "ahead", "ahold", "aided", "aider", "aides", "ailed", "aimed", "aimer", "aioli", "aired", "aisle", "alarm", "album", "alder", "aleph", "alert", "algae", "algal", "alias", "alibi", "alien", "align", "alike", "alive", "alkyd", "alkyl", "allay", "alley", "allot", "allow", "alloy", "allyl", "aloes", "aloft", "aloha", "alone", "along", "aloof", "aloud", "alpha", "altar", "alter", "altos", "alums", "amass", "amaze", "amber", "ambit", "amble", "ambos", "amend", "amide", "amine", "amino", "amiss", "amity", "amnio", "among", "amour", "amped", "ample", "amply", "amuse", "ancho", "angel", "anger", "angle", "angry", "angst", "anima", "anime", "anion", "anise", "ankle", "annas", "annex", "annoy", "annul", "anode", "anole", "antic", "antis", "antsy", "anvil", "aorta", "apace", "apart", "aphid", "apnea", "apple", "apply", "apron", "apses", "apter", "aptly", "aquas", "arbor", "ardor", "areal", "areas", "areca", "arena", "argon", "argot", "argue", "argus", "arias", "arils", "arise", "armed", "armor", "aroma", "arose", "array", "arrow", "arses", "arson", "artsy", "asana", "ascot", "ashen", "ashes", "aside", "asked", "asker", "askew", "aspen", "aspic", "assay", "asses", "asset", "aster", "astir", "asura", "atlas", "atman", "atoll", "atoms", "atone", "atopy", "attic", "audio", "audit", "auger", "aught", "augur", "aunts", "aunty", "aural", "auras", "autos", "auxin", "avail", "avers", "avert", "avian", "avoid", "avows", "await", "awake", "award", "aware", "awash", "awful", "awoke", "axels", "axial", "axils", "axing", "axiom", "axion", "axles", "axons", "azide", "azole", "azure"];
+const WORDS = words.map( s=>s.toUpperCase() );
 
 function pickWord() {
-  let words= ["aback", "abase", "abate", "abaya", "abbey", "abbot", "abets", "abhor", "abide", "abode", "abort", "about", "above", "abuse", "abuts", "abyss", "ached", "aches", "acids", "acing", "ackee", "acorn", "acres", "acrid", "acted", "actin", "actor", "acute", "adage", "adapt", "added", "adder", "addle", "adept", "adieu", "adios", "adits", "adman", "admin", "admit", "adobe", "adobo", "adopt", "adore", "adorn", "adult", "adzes", "aegis", "aeons", "aerie", "affix", "afire", "afoot", "afore", "after", "again", "agape", "agate", "agave", "agent", "aggro", "agile", "aging", "aglow", "agony", "agora", "agree", "ahead", "ahold", "aided", "aider", "aides", "ailed", "aimed", "aimer", "aioli", "aired", "aisle", "alarm", "album", "alder", "aleph", "alert", "algae", "algal", "alias", "alibi", "alien", "align", "alike", "alive", "alkyd", "alkyl", "allay", "alley", "allot", "allow", "alloy", "allyl", "aloes", "aloft", "aloha", "alone", "along", "aloof", "aloud", "alpha", "altar", "alter", "altos", "alums", "amass", "amaze", "amber", "ambit", "amble", "ambos", "amend", "amide", "amine", "amino", "amiss", "amity", "amnio", "among", "amour", "amped", "ample", "amply", "amuse", "ancho", "angel", "anger", "angle", "angry", "angst", "anima", "anime", "anion", "anise", "ankle", "annas", "annex", "annoy", "annul", "anode", "anole", "antic", "antis", "antsy", "anvil", "aorta", "apace", "apart", "aphid", "apnea", "apple", "apply", "apron", "apses", "apter", "aptly", "aquas", "arbor", "ardor", "areal", "areas", "areca", "arena", "argon", "argot", "argue", "argus", "arias", "arils", "arise", "armed", "armor", "aroma", "arose", "array", "arrow", "arses", "arson", "artsy", "asana", "ascot", "ashen", "ashes", "aside", "asked", "asker", "askew", "aspen", "aspic", "assay", "asses", "asset", "aster", "astir", "asura", "atlas", "atman", "atoll", "atoms", "atone", "atopy", "attic", "audio", "audit", "auger", "aught", "augur", "aunts", "aunty", "aural", "auras", "autos", "auxin", "avail", "avers", "avert", "avian", "avoid", "avows", "await", "awake", "award", "aware", "awash", "awful", "awoke", "axels", "axial", "axils", "axing", "axiom", "axion", "axles", "axons", "azide", "azole", "azure"];
-
- 	return words[ Math.floor( Math.random() * words.length ) ]; 
+ 	return WORDS[ Math.floor( Math.random() * WORDS.length ) ]; 
  }
 let canvas = document.getElementById("myCanvas");
 let ctx = canvas.getContext("2d");
@@ -43,10 +41,14 @@ function click(e){
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   let gameOver = false;
   if( letter == "enter"){
-    let lettersColors = board.checkWord();
-    keyboard.setColors( lettersColors );
-    gameOver = board.isWinningWord(lettersColors)
-      
+    if( board.isWord() ){
+      let lettersColors = board.checkWord();
+      keyboard.setColors( lettersColors );
+      gameOver = board.isWinningWord(lettersColors);
+    }
+    else{
+      alert("Invalid Word");
+    } 
   }
   else if( letter == "delete"){
     board.deleteLetter();
@@ -71,7 +73,7 @@ class Cell {
   	this.x = x;
     this.y = y;
     this.color = "#FFFFFF";
-    this.keySide = 40;
+    this.keySide = 65;
     this.string = "";
     
   }
@@ -88,7 +90,7 @@ class Cell {
     ctx.fillRect( this.x, this.y, this.keySide, this.keySide);
     ctx.stroke();
     ctx.fillStyle = "black";
-    ctx.font = "16px Arial";
+    ctx.font = "28px Arial";
     ctx.fillText(this.string, (this.x)+((this.keySide)/5),(this.y)+((this.keySide)/2));
   }
 
@@ -108,7 +110,7 @@ class Key {
     this.x = x;
     this.y = y;
     this.shift = shift;
-    this.keySide = 28;
+    this.keySide = 40;
     this.string = string;
     this.color = '#FFFFFF';
   }
@@ -122,7 +124,7 @@ class Key {
     ctx.rect(this.x, this.y, (this.keySide)*(this.shift), this.keySide);
     ctx.stroke();
     ctx.fillStyle = "black";
-    ctx.font = "16px Arial";
+    ctx.font = "22px Arial";
     ctx.fillText(this.string, (this.x)+((this.keySide)/5),(this.y)+((this.keySide)/2)); 
   }
   isClicked(x,y){
@@ -183,7 +185,10 @@ class Board{
   //add letter
   addLetter(letter){
     //pick the right cell
-    
+    if( (this.index % 5 == 0 && this.index != 0) && this.cells[this.index-1].string == "#FFFFFF"){ //at end of line
+      alert("Submit Word")
+      return;
+    }
     this.cells[this.index].update(letter);
     this.index += 1;
   }
@@ -201,11 +206,20 @@ class Board{
     this.cells[this.index].update("");
   }
 
+  isWord(){
+    let word = "";
+    for( let i = this.index-5; i < this.index; i ++ ){
+        word += this.cells[i].string;
+    }
+    console.log(word);
+    return WORDS.includes(word )
+  }
+
   checkWord(){
     let lettersColor = {};
     if(this.index % 5 != 0 || this.index == 0){
-      console.log(this.index);
-      return;
+      alert("Not enough Letters");
+      return lettersColor;
     }
     
     for( let i = this.index-5; i < this.index; i ++ ){
@@ -223,17 +237,17 @@ class Board{
           this.cells[i].setColor(GREEN);
           lettersColor[this.cells[i].string] = GREEN;
         }
-      }
+    }
     for( let i = this.index-5; i < this.index; i ++ ){
-      console.log( this.cells[i].getString() in lettersColor );
       if( ! ( this.cells[i].getString() in lettersColor ) ){
         lettersColor[this.cells[i].string] = GREY;
-        console.log(lettersColor[this.cells[i].string]);
       }
     }
     console.log( lettersColor );
     return lettersColor;
   }
+
+
   isWinningWord( lettersColor ){
     for( let i = this.index-5; i < this.index; i ++ ){
         if( this.cells[i].getString() != this.word[i-this.index+5]  ){
@@ -246,19 +260,21 @@ class Board{
 
 function drawKeyboard(){
   let letters = ['q', 'w', 'e', 'r', 't','y', 'u', 'i', 'o', 'p', 'a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l', 'z', 'x', 'c', 'v', 'b', 'n', 'm'];
+  letters = letters.map( x => x.toUpperCase());
+  console.log(letters);
   let x = 30;
   let y = 3 * canvas.width / 4;
   let keys = [];
-  let keySide = 28;
+  let keySide = 40;
   for( let i = 0; i < letters.length; i ++ ){
     let key = new Key(x,y, letters[i], 1);
     if( i == 10  ) {
         y += keySide + 7;
         x = 40 + keySide/2;
-        key = new Key(x,y, letters[i], 1);
+        key = new Key(x, y, letters[i], 1);
     }
     else if( i == 19 ){
-      x = 30;
+      x = 20;
     	y += keySide + 7;
       key = new Key(x,y, "enter", 1.65);
       key.draw();
@@ -296,8 +312,6 @@ function drawBoard(){
   }
   return cells;
 }
-
-
 
 
 let keys = drawKeyboard();
