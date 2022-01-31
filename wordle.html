@@ -32,23 +32,30 @@ function click(e){
   let rect = canvas.getBoundingClientRect();
   let x = e.clientX - rect.left;
   let y = e.clientY - rect.top;
-
   let letter = keyboard.checkClick(x,y);
-  if( letter != null ){
-    console.log(letter);
-    //add to board 
-
-
+  if( letter == null) return;
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  
+  console.log(letter)
+  if( letter == "enter"){
+    board.checkWord();
   }
+  else if( letter == "delete"){
+    board.deleteLetter();
+  }
+  else if( letter != null ){
+    board.addLetter(letter);
+  }
+  board.redraw();
+  keyboard.draw();
 }
 
 
 class Cell {
-	
   constructor(x, y){
   	this.x = x;
     this.y = y;
-    this.color = "FFFFF";
+    this.color = "#FFFFFF";
     this.keySide = 40;
     this.string = "";
     
@@ -60,34 +67,42 @@ class Cell {
   
   draw(){
     ctx.lineWidth = "2";
-  	ctx.strokeStyle = 'black';
+  	ctx.strokeStyle = this.color;
   	ctx.fillStyle = this.color;
   	ctx.beginPath();
-    ctx.rect( this.x, this.y, this.keySide, this.keySide);
+    ctx.fillRect( this.x, this.y, this.keySide, this.keySide);
     ctx.stroke();
+    ctx.fillStyle = "black";
     ctx.font = "16px Arial";
     ctx.fillText(this.string, (this.x)+((this.keySide)/5),(this.y)+((this.keySide)/2));
   }
 
-
+  setColor(color){
+    this.color = color;
+  }
+  getString(){
+    return this.string;
+  }
   getKeySide(){
     return this.keySide;
   }
 }
 
 class Key {
-  constructor (x, y, string) {
+  constructor(x, y, string, shift) {
     this.x = x;
     this.y = y;
+    this.shift = shift;
     this.keySide = 28;
     this.string = string;
   }
-  draw(shift){
+  draw(){
     ctx.lineWidth = "2";
   	ctx.strokeStyle = 'black';
   	ctx.beginPath();
-    ctx.rect(this.x, this.y, (this.keySide)*(shift), this.keySide);
+    ctx.rect(this.x, this.y, (this.keySide)*(this.shift), this.keySide);
     ctx.stroke();
+    ctx.fillStyle = "black";
     ctx.font = "16px Arial";
     ctx.fillText(this.string, (this.x)+((this.keySide)/5),(this.y)+((this.keySide)/2)); 
   }
@@ -109,21 +124,65 @@ class Keyboard {
      }
      return null;
    }
+   draw(){
+     for( let i = 0; i < this.keys.length; i ++ ){
+       this.keys[i].draw();
+     }
+   }
+
 
 }
 
-class Word{
+class Board{
   constructor(cells){
     this.cells = cells;
+    this.index = 0;
+    this.word = pickWord();
+    console.log(this.word);
   }
 
-  //update cell
+  //add letter
+  addLetter(letter){
+    //pick the right cell
+    
+    this.cells[this.index].update(letter);
+    this.index += 1;
+  }
 
+  //redraw the board with new letters
+  redraw(){
+    for( let i = 0; i < this.cells.length; i ++ ){
+      this.cells[i].draw();
+    }
+  }
 
-  // add letter
+  deleteLetter(){
+    if( this.index <= 0 )return;
+    this.index -= 1;
+    this.cells[this.index].update("");
+  }
 
-
-  //delete letter
+  checkWord(){
+     if(this.index % 5 != 0 || this.index == 0){
+      console.log(this.index);
+      return;
+    }
+    for( let i = this.index-5; i < this.index; i ++ ){
+      for( let letterNum = 0; letterNum < this.word.length; letterNum++ ){
+        if( this.cells[i].getString() == this.word[letterNum]  ){
+          this.cells[i].setColor("#B19F4C");
+        }
+      }
+    }
+    let letterCounter = 0
+    for( let i = this.index-5; i < this.index; i ++ ){
+      console.log(i-this.index+5);
+        if( this.cells[i].getString() == this.word[i-this.index+5]  ){
+          console.log(this.cells[i]);
+          this.cells[i].setColor("#618B55");
+        }
+      }
+  }
 }
 
 function drawKeyboard(){
@@ -133,27 +192,27 @@ function drawKeyboard(){
   let keys = [];
   let keySide = 28;
   for( let i = 0; i < letters.length; i ++ ){
-    let key = new Key(x,y, letters[i]);
+    let key = new Key(x,y, letters[i], 1);
     if( i == 10  ) {
         y += keySide + 7;
         x = 40 + keySide/2;
-        key = new Key(x,y, letters[i]);
+        key = new Key(x,y, letters[i], 1);
     }
     else if( i == 19 ){
       x = 30;
     	y += keySide + 7;
-      key = new Key(x,y, "enter");
-      key.draw( 1.65);
+      key = new Key(x,y, "enter", 1.65);
+      key.draw();
       keys.push(key);
       x = 55 + keySide;
-      key = new Key(x,y, letters[i]);
+      key = new Key(x,y, letters[i], 1);
     }
-    key.draw( 1);
+    key.draw();
     keys.push(key);
     x += keySide + 7;
   }
-  let key = new Key(x,y, "delete");
-  key.draw(1.85);
+  let key = new Key(x,y, "delete", 1.85);
+  key.draw();
   keys.push(key);
   x += keySide + 7;
   return keys;
@@ -163,10 +222,9 @@ function drawKeyboard(){
 function drawBoard(){
 	let x = 30;
   let y = 10;
-  let words = [];
+  let cells = [];
   let keySide = 40;
   for( let i = 0; i < 6; i ++ ){
-    let cells = []
   	for( let j = 0; j < 5; j ++){
       let cell = new Cell(x,y);
       keySide = cell.getKeySide();
@@ -174,12 +232,10 @@ function drawBoard(){
       cells.push(cell);
       x += keySide + 10;
      }
-    let word = new Word(cells);
-     words.push(word);
      x = 30;
      y += keySide + 10;
   }
-  return words;
+  return cells;
 }
 
 
@@ -187,11 +243,10 @@ function drawBoard(){
 
 let keys = drawKeyboard();
 let keyboard = new Keyboard(keys);
-let words = drawBoard();
+let cells = drawBoard();
+let board = new Board(cells);
 let word = pickWord();
 
-
-console.log(words);
 
 
 
