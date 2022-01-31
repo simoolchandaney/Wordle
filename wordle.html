@@ -38,7 +38,8 @@ function click(e){
   
   console.log(letter)
   if( letter == "enter"){
-    board.checkWord();
+    let lettersColors = board.checkWord();
+    keyboard.setColors( lettersColors );
   }
   else if( letter == "delete"){
     board.deleteLetter();
@@ -95,11 +96,15 @@ class Key {
     this.shift = shift;
     this.keySide = 28;
     this.string = string;
+    this.color = '#FFFFFF';
   }
   draw(){
     ctx.lineWidth = "2";
   	ctx.strokeStyle = 'black';
+    ctx.fillStyle = this.color;
   	ctx.beginPath();
+    ctx.fillRect(this.x, this.y, (this.keySide)*(this.shift), this.keySide);
+    ctx.strokeStyle = 'black';
     ctx.rect(this.x, this.y, (this.keySide)*(this.shift), this.keySide);
     ctx.stroke();
     ctx.fillStyle = "black";
@@ -108,6 +113,10 @@ class Key {
   }
   isClicked(x,y){
     return (x >= this.x && x <= this.x + this.keySide && y >= this.y && y <= this.y + this.keySide );
+  }
+
+  setColor(color){
+    this.color = color;
   }
 }
 
@@ -127,6 +136,22 @@ class Keyboard {
    draw(){
      for( let i = 0; i < this.keys.length; i ++ ){
        this.keys[i].draw();
+     }
+   }
+
+   updateKey( string, color){
+     for( let i = 0; i < this.keys.length; i ++  ){
+       if( this.keys[i].string == string ){
+          this.keys[i].setColor(color);
+          break;
+       }
+     }
+   }
+
+   setColors( lettersColors ){
+     for( var key in lettersColors ) {
+       this.updateKey( key, lettersColors[key]);
+       console.log(key, lettersColors[key]  );
      }
    }
 
@@ -163,15 +188,20 @@ class Board{
   }
 
   checkWord(){
-     if(this.index % 5 != 0 || this.index == 0){
+    let lettersColor = {};
+    if(this.index % 5 != 0 || this.index == 0){
       console.log(this.index);
       return;
     }
+    
     for( let i = this.index-5; i < this.index; i ++ ){
       for( let letterNum = 0; letterNum < this.word.length; letterNum++ ){
         if( this.cells[i].getString() == this.word[letterNum]  ){
           this.cells[i].setColor("#B19F4C");
+          lettersColor[this.cells[i].string] = "#B19F4C";
+          break;
         }
+        this.cells[i].setColor("#808080");
       }
     }
     let letterCounter = 0
@@ -180,8 +210,11 @@ class Board{
         if( this.cells[i].getString() == this.word[i-this.index+5]  ){
           console.log(this.cells[i]);
           this.cells[i].setColor("#618B55");
+          lettersColor[this.cells[i].string] = "#618B55";
         }
       }
+    console.log( lettersColor );
+    return lettersColor;
   }
 }
 
