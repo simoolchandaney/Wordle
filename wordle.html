@@ -181,7 +181,7 @@ class Board{
   // add letter to board
   addLetter(letter){
     // place letter in correct cell
-    if( (this.index % 5 == 0 && this.index != 0) && this.cells[this.index-1].string == "#FFFFFF"){ //at end of line
+    if( (this.index % 5 == 0 && this.index != 0) && this.cells[this.index-1].color == "#FFFFFF"){ //at end of line
       alert("Submit Word")
       return;
     }
