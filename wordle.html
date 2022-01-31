@@ -15,6 +15,12 @@
 
 <script>
 
+const GREY   = "#3A3A3C";
+const GREEN  = "#618B55";
+const YELLOW = "#B19F4C";
+
+
+
 function pickWord() {
   let words= ["aback", "abase", "abate", "abaya", "abbey", "abbot", "abets", "abhor", "abide", "abode", "abort", "about", "above", "abuse", "abuts", "abyss", "ached", "aches", "acids", "acing", "ackee", "acorn", "acres", "acrid", "acted", "actin", "actor", "acute", "adage", "adapt", "added", "adder", "addle", "adept", "adieu", "adios", "adits", "adman", "admin", "admit", "adobe", "adobo", "adopt", "adore", "adorn", "adult", "adzes", "aegis", "aeons", "aerie", "affix", "afire", "afoot", "afore", "after", "again", "agape", "agate", "agave", "agent", "aggro", "agile", "aging", "aglow", "agony", "agora", "agree", "ahead", "ahold", "aided", "aider", "aides", "ailed", "aimed", "aimer", "aioli", "aired", "aisle", "alarm", "album", "alder", "aleph", "alert", "algae", "algal", "alias", "alibi", "alien", "align", "alike", "alive", "alkyd", "alkyl", "allay", "alley", "allot", "allow", "alloy", "allyl", "aloes", "aloft", "aloha", "alone", "along", "aloof", "aloud", "alpha", "altar", "alter", "altos", "alums", "amass", "amaze", "amber", "ambit", "amble", "ambos", "amend", "amide", "amine", "amino", "amiss", "amity", "amnio", "among", "amour", "amped", "ample", "amply", "amuse", "ancho", "angel", "anger", "angle", "angry", "angst", "anima", "anime", "anion", "anise", "ankle", "annas", "annex", "annoy", "annul", "anode", "anole", "antic", "antis", "antsy", "anvil", "aorta", "apace", "apart", "aphid", "apnea", "apple", "apply", "apron", "apses", "apter", "aptly", "aquas", "arbor", "ardor", "areal", "areas", "areca", "arena", "argon", "argot", "argue", "argus", "arias", "arils", "arise", "armed", "armor", "aroma", "arose", "array", "arrow", "arses", "arson", "artsy", "asana", "ascot", "ashen", "ashes", "aside", "asked", "asker", "askew", "aspen", "aspic", "assay", "asses", "asset", "aster", "astir", "asura", "atlas", "atman", "atoll", "atoms", "atone", "atopy", "attic", "audio", "audit", "auger", "aught", "augur", "aunts", "aunty", "aural", "auras", "autos", "auxin", "avail", "avers", "avert", "avian", "avoid", "avows", "await", "awake", "award", "aware", "awash", "awful", "awoke", "axels", "axial", "axils", "axing", "axiom", "axion", "axles", "axons", "azide", "azole", "azure"];
 
@@ -112,7 +118,7 @@ class Key {
     ctx.fillText(this.string, (this.x)+((this.keySide)/5),(this.y)+((this.keySide)/2)); 
   }
   isClicked(x,y){
-    return (x >= this.x && x <= this.x + this.keySide && y >= this.y && y <= this.y + this.keySide );
+    return (x >= this.x && x <= this.x + this.keySide && y >= this.y && y <= this.y + this.keySide && this.color != GREY);
   }
 
   setColor(color){
@@ -197,22 +203,27 @@ class Board{
     for( let i = this.index-5; i < this.index; i ++ ){
       for( let letterNum = 0; letterNum < this.word.length; letterNum++ ){
         if( this.cells[i].getString() == this.word[letterNum]  ){
-          this.cells[i].setColor("#B19F4C");
-          lettersColor[this.cells[i].string] = "#B19F4C";
+          this.cells[i].setColor(YELLOW);
+          lettersColor[this.cells[i].string] = YELLOW;
           break;
         }
-        this.cells[i].setColor("#808080");
+        this.cells[i].setColor(GREY);
       }
     }
     let letterCounter = 0
     for( let i = this.index-5; i < this.index; i ++ ){
-      console.log(i-this.index+5);
         if( this.cells[i].getString() == this.word[i-this.index+5]  ){
-          console.log(this.cells[i]);
-          this.cells[i].setColor("#618B55");
-          lettersColor[this.cells[i].string] = "#618B55";
+          this.cells[i].setColor(GREEN);
+          lettersColor[this.cells[i].string] = GREEN;
         }
       }
+    for( let i = this.index-5; i < this.index; i ++ ){
+      console.log( this.cells[i].getString() in lettersColor );
+      if( ! ( this.cells[i].getString() in lettersColor ) ){
+        lettersColor[this.cells[i].string] = GREY;
+        console.log(lettersColor[this.cells[i].string]);
+      }
+    }
     console.log( lettersColor );
     return lettersColor;
   }
