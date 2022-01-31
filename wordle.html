@@ -5,12 +5,12 @@
 	<title>Paradigms Assignment 2</title>
 	<style>
    	 * { padding: 0; margin: 0; }
-   	 canvas { background: #eee; display: block; margin: 0 auto; }
+   	 canvas { background: #eee; display: block; margin: 0 0;  }
 	</style>
 </head>
 <body>
 
-<canvas id="myCanvas" width="480px" height="480px" ></canvas>
+<canvas id="myCanvas" width="680px" height="680px" ></canvas>
 
 
 <script>
@@ -41,11 +41,12 @@ function click(e){
   let letter = keyboard.checkClick(x,y);
   if( letter == null) return;
   ctx.clearRect(0, 0, canvas.width, canvas.height);
-  
-  console.log(letter)
+  let gameOver = false;
   if( letter == "enter"){
     let lettersColors = board.checkWord();
     keyboard.setColors( lettersColors );
+    gameOver = board.isWinningWord(lettersColors)
+      
   }
   else if( letter == "delete"){
     board.deleteLetter();
@@ -53,8 +54,15 @@ function click(e){
   else if( letter != null ){
     board.addLetter(letter);
   }
+
+
   board.redraw();
   keyboard.draw();
+
+  if( gameOver ){
+    alert('You Won!')
+  }
+
 }
 
 
@@ -210,7 +218,6 @@ class Board{
         this.cells[i].setColor(GREY);
       }
     }
-    let letterCounter = 0
     for( let i = this.index-5; i < this.index; i ++ ){
         if( this.cells[i].getString() == this.word[i-this.index+5]  ){
           this.cells[i].setColor(GREEN);
@@ -226,6 +233,14 @@ class Board{
     }
     console.log( lettersColor );
     return lettersColor;
+  }
+  isWinningWord( lettersColor ){
+    for( let i = this.index-5; i < this.index; i ++ ){
+        if( this.cells[i].getString() != this.word[i-this.index+5]  ){
+          return false;
+        }
+      }
+    return true;
   }
 }
 
@@ -290,18 +305,6 @@ let keyboard = new Keyboard(keys);
 let cells = drawBoard();
 let board = new Board(cells);
 let word = pickWord();
-
-
-
-
-
-
-
-
-
-
-
-
 
 </script>
 </body>
