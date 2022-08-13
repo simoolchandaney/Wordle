@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8" />
+	<title>Paradigms Assignment 2 Simran Moolchandaney & John Schelehr</title>
+	<style>
+   	 * { padding: 0; margin: 0; }
+   	 canvas { background: #eee; display: block; margin: 0 0;  }
+	</style>
+</head>
+<body>
+<canvas id="myCanvas" width="680px" height="680px" ></canvas>
+<script>
+
+const GREY   = "#3A3A3C";
+const GREEN  = "#618B55";
+const YELLOW = "#B19F4C";
+// global variable containing most common words (2nd list)
+let words = ["aback", "abase", "abate", "abaya", "abbey", "abbot", "abets", "abhor", "abide", "abode", "abort", "about", "above", "abuse", "abuts", "abyss", "ached", "aches", "acids", "acing", "ackee", "acorn", "acres", "acrid", "acted", "actin", "actor", "acute", "adage", "adapt", "added", "adder", "addle", "adept", "adieu", "adios", "adits", "adman", "admin", "admit", "adobe", "adobo", "adopt", "adore", "adorn", "adult", "adzes", "aegis", "aeons", "aerie", "affix", "afire", "afoot", "afore", "after", "again", "agape", "agate", "agave", "agent", "aggro", "agile", "aging", "aglow", "agony", "agora", "agree", "ahead", "ahold", "aided", "aider", "aides", "ailed", "aimed", "aimer", "aioli", "aired", "aisle", "alarm", "album", "alder", "aleph", "alert", "algae", "algal", "alias", "alibi", "alien", "align", "alike", "alive", "alkyd", "alkyl", "allay", "alley", "allot", "allow", "alloy", "allyl", "aloes", "aloft", "aloha", "alone", "along", "aloof", "aloud", "alpha", "altar", "alter", "altos", "alums", "amass", "amaze", "amber", "ambit", "amble", "ambos", "amend", "amide", "amine", "amino", "amiss", "amity", "amnio", "among", "amour", "amped", "ample", "amply", "amuse", "ancho", "angel", "anger", "angle", "angry", "angst", "anima", "anime", "anion", "anise", "ankle", "annas", "annex", "annoy", "annul", "anode", "anole", "antic", "antis", "antsy", "anvil", "aorta", "apace", "apart", "aphid", "apnea", "apple", "apply", "apron", "apses", "apter", "aptly", "aquas", "arbor", "ardor", "areal", "areas", "areca", "arena", "argon", "argot", "argue", "argus", "arias", "arils", "arise", "armed", "armor", "aroma", "arose", "array", "arrow", "arses", "arson", "artsy", "asana", "ascot", "ashen", "ashes", "aside", "asked", "asker", "askew", "aspen", "aspic", "assay", "asses", "asset", "aster", "astir", "asura", "atlas", "atman", "atoll", "atoms", "atone", "atopy", "attic", "audio", "audit", "auger", "aught", "augur", "aunts", "aunty", "aural", "auras", "autos", "auxin", "avail", "avers", "avert", "avian", "avoid", "avows", "await", "awake", "award", "aware", "awash", "awful", "awoke", "axels", "axial", "axils", "axing", "axiom", "axion", "axles", "axons", "azide", "azole", "azure"];
+const WORDS = words.map( s=>s.toUpperCase() );
+
+// choose a random word
+function pickWord() {
+ 	return WORDS[ Math.floor( Math.random() * WORDS.length ) ]; 
+}
+let canvas = document.getElementById("myCanvas");
+let ctx = canvas.getContext("2d");
+
+canvas.addEventListener("mousedown", click, false );
+
+// function that handles mouse clicking events
+function click(e){
+  let rect = canvas.getBoundingClientRect();
+  let x = e.clientX - rect.left;
+  let y = e.clientY - rect.top;
+  let letter = keyboard.checkClick(x,y);
+  if( letter == null) return;
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  let gameOver = false;
+  if( letter == "enter"){
+    if( board.isWord() ){
+      let lettersColors = board.checkWord();
+      keyboard.setColors( lettersColors );
+      gameOver = board.isWinningWord(lettersColors);
+    }
+    else{
+      alert("Invalid Word");
+    } 
+  }
+  else if( letter == "delete"){
+    board.deleteLetter();
+  }
+  else if( letter != null ){
+    board.addLetter(letter);
+  }
+
+  // redraw board and keyboard upon each entry
+  board.redraw();
+  keyboard.draw();
+
+  // you guessed the right word 
+  if( gameOver ){
+    alert('You Won!')
+  }
+}
+
+// class for 5 x 6 cells 
+class Cell {
+  constructor(x, y){
+  	this.x = x;
+    this.y = y;
+    this.color = "#FFFFFF";
+    this.keySide = 65;
+    this.string = "";
+    
+  }
+  update(string) {
+    this.string = string;
+  }
+  draw(){
+    ctx.font = "28px Arial";
+    ctx.fillStyle = "black";
+    ctx.fillText("WORDLE", 150, 40);
+    ctx.lineWidth = "2";
+  	ctx.strokeStyle = this.color;
+  	ctx.fillStyle = this.color;
+  	ctx.beginPath();
+    ctx.fillRect( this.x, this.y, this.keySide, this.keySide);
+    ctx.stroke();
+    ctx.fillStyle = "black";
+    ctx.font = "28px Arial";
+    ctx.fillText(this.string, (this.x)+((this.keySide)/5),(this.y)+((this.keySide)/2));
+  }
+  setColor(color){
+    this.color = color;
+  }
+  getString(){
+    return this.string;
+  }
+  getKeySide(){
+    return this.keySide;
+  }
+}
+
+// class for keyboard keys
+class Key {
+  constructor(x, y, string, shift) {
+    this.x = x;
+    this.y = y;
+    this.shift = shift;
+    this.keySide = 40;
+    this.string = string;
+    this.color = '#FFFFFF';
+  }
+  draw(){
+    ctx.lineWidth = "2";
+  	ctx.strokeStyle = 'black';
+    ctx.fillStyle = this.color;
+  	ctx.beginPath();
+    ctx.fillRect(this.x, this.y, (this.keySide)*(this.shift), this.keySide);
+    ctx.strokeStyle = 'black';
+    ctx.rect(this.x, this.y, (this.keySide)*(this.shift), this.keySide);
+    ctx.stroke();
+    ctx.fillStyle = "black";
+    ctx.font = "22px Arial";
+    ctx.fillText(this.string, (this.x)+((this.keySide)/5),(this.y)+((this.keySide)/2)); 
+  }
+  // check if mouse cursor is within bounds
+  isClicked(x,y){
+    return (x >= this.x && x <= this.x + this.keySide && y >= this.y && y <= this.y + this.keySide && this.color != GREY);
+  }
+  setColor(color){
+    this.color = color;
+  }
+}
+
+// class for keyboard
+class Keyboard {
+   constructor(keys){
+     this.keys = keys;
+   }
+
+   checkClick(x,y ){
+     for( let i = 0; i < this.keys.length; i ++ ){
+        if( this.keys[i].isClicked(x,y) ){
+          return this.keys[i].string;
+        }
+     }
+     return null;
+   }
+   draw(){
+     for( let i = 0; i < this.keys.length; i ++ ){
+       this.keys[i].draw();
+     }
+   }
+
+   // color keyboard depending on how guesses went
+   updateKey( string, color){
+     for( let i = 0; i < this.keys.length; i ++  ){
+       if( this.keys[i].string == string ){
+          this.keys[i].setColor(color);
+          break;
+       }
+     }
+   }
+   setColors( lettersColors ){
+     for( var key in lettersColors ) {
+       this.updateKey( key, lettersColors[key]);
+     }
+   }
+}
+
+// class for board
+class Board{
+  constructor(cells){
+    this.cells = cells;
+    this.index = 0;
+    this.word = pickWord();
+    console.log(this.word);
+  }
+  // add letter to board
+  addLetter(letter){
+    // place letter in correct cell
+    if( (this.index % 5 == 0 && this.index != 0) && this.cells[this.index-1].color == "#FFFFFF"){ //at end of line
+      alert("Submit Word")
+      return;
+    }
+    this.cells[this.index].update(letter);
+    this.index += 1;
+  }
+  // redraw the board with new letters
+  redraw(){
+    for( let i = 0; i < this.cells.length; i ++ ){
+      this.cells[i].draw();
+    }
+  }
+  // delete case 
+  deleteLetter(){
+    if( this.index <= 0 )return;
+    this.index -= 1;
+    this.cells[this.index].update("");
+  }
+  // check if row entry is a valid word
+  isWord(){
+    let word = "";
+    for( let i = this.index-5; i < this.index; i ++ ){
+        word += this.cells[i].string;
+    }
+    return WORDS.includes(word )
+  }
+  // check if word has enough letters
+  checkWord(){
+    let lettersColor = {};
+    if(this.index % 5 != 0 || this.index == 0){
+      alert("Not enough Letters");
+      return lettersColor;
+    }
+    // update cells' colors based on how guesses went
+    for( let i = this.index-5; i < this.index; i ++ ){
+      for( let letterNum = 0; letterNum < this.word.length; letterNum++ ){
+        if( this.cells[i].getString() == this.word[letterNum]  ){
+          this.cells[i].setColor(YELLOW);
+          lettersColor[this.cells[i].string] = YELLOW;
+          break;
+        }
+        this.cells[i].setColor(GREY);
+      }
+    }
+    for( let i = this.index-5; i < this.index; i ++ ){
+        if( this.cells[i].getString() == this.word[i-this.index+5]  ){
+          this.cells[i].setColor(GREEN);
+          lettersColor[this.cells[i].string] = GREEN;
+        }
+    }
+    for( let i = this.index-5; i < this.index; i ++ ){
+      if( ! ( this.cells[i].getString() in lettersColor ) ){
+        lettersColor[this.cells[i].string] = GREY;
+      }
+    }
+    return lettersColor;
+  }
+  // check if you guessed the word 
+  isWinningWord( lettersColor ){
+    for( let i = this.index-5; i < this.index; i ++ ){
+        if( this.cells[i].getString() != this.word[i-this.index+5]  ){
+          return false;
+        }
+      }
+    return true;
+  }
+}
+
+// function that draws keyboard
+function drawKeyboard(){
+  let letters = ['q', 'w', 'e', 'r', 't','y', 'u', 'i', 'o', 'p', 'a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l', 'z', 'x', 'c', 'v', 'b', 'n', 'm'];
+  letters = letters.map( x => x.toUpperCase());
+  let x = 30;
+  let y = 3 * canvas.width / 4;
+  let keys = [];
+  let keySide = 40;
+  for( let i = 0; i < letters.length; i ++ ){
+    let key = new Key(x,y, letters[i], 1);
+    if( i == 10  ) {
+        y += keySide + 7;
+        x = 40 + keySide/2;
+        key = new Key(x, y, letters[i], 1);
+    }
+    else if( i == 19 ){
+      x = 20;
+    	y += keySide + 7;
+      key = new Key(x,y, "enter", 1.65);
+      key.draw();
+      keys.push(key);
+      x = 55 + keySide;
+      key = new Key(x,y, letters[i], 1);
+    }
+    key.draw();
+    keys.push(key);
+    x += keySide + 7;
+  }
+  let key = new Key(x,y, "delete", 1.85);
+  key.draw();
+  keys.push(key);
+  x += keySide + 7;
+  return keys;
+ }
+
+ // function that draws board 
+function drawBoard(){
+	let x = 30;
+  let y = 50;
+  let cells = [];
+  let keySide = 40;
+  for( let i = 0; i < 6; i ++ ){
+  	for( let j = 0; j < 5; j ++){
+      let cell = new Cell(x,y);
+      keySide = cell.getKeySide();
+      cell.draw();
+      cells.push(cell);
+      x += keySide + 10;
+     }
+     x = 30;
+     y += keySide + 10;
+  }
+  return cells;
+}
+
+// function calls
+let keys = drawKeyboard();
+let keyboard = new Keyboard(keys);
+let cells = drawBoard();
+let board = new Board(cells);
+let word = pickWord();
+
+</script>
+</body>
+</html>
