@@ -1,1 +1,1 @@
-# ParadigmsWordle
+# Wordle
